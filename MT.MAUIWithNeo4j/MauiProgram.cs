@@ -1,5 +1,8 @@
 ﻿using Microsoft.Extensions.Logging;
-
+using MT.MAUIWithNeo4j.UseCases.Interfaces;
+using MT.MAUIWithNeo4j.UseCases.Concrete;
+using MT.MAUIWithNeo4j.UseCases.PluginInterfaces;
+using MT.MAUIWithNeo4j.Datastore;
 namespace MT.MAUIWithNeo4j
 {
     public static class MauiProgram
@@ -19,7 +22,14 @@ namespace MT.MAUIWithNeo4j
 #if DEBUG
     		builder.Logging.AddDebug();
 #endif
+            builder.Services.AddSingleton<IViewTaskUseCase, ViewTaskUseCase>();
+            builder.Services.AddSingleton<IViewCategoryUseCase, ViewCategoryUseCase>();
+            builder.Services.AddSingleton<ITaskRepository, TaskWebApiRepository>(); 
+            builder.Services.AddSingleton<ICategoryRepository, CategoryWebApiRepository>();
 
+            builder.Services.AddScoped<IAddTaskUseCase, AddTaskUseCase>();
+            builder.Services.AddScoped<IAddCategoryUseCase, AddCategoryUseCase>();
+            
             return builder.Build();
         }
     }
