@@ -1,13 +1,23 @@
-using MT.MAUIWithNeo4j.MVVM.Models;
+using MT.MAUIWithNeo4j.Core;
 using MT.MAUIWithNeo4j.MVVM.ViewModels;
-
+using MT.MAUIWithNeo4j.UseCases.Interfaces;
+using System.Threading.Tasks;
 namespace MT.MAUIWithNeo4j.MVVM.Views;
 
 public partial class NewTaskView : ContentPage
 {
-	public NewTaskView()
+
+    private readonly IAddTaskUseCase _viewAddTaskUseCase;
+    private readonly IViewTaskUseCase _viewTaskUseCase;
+    private readonly IViewCategoryUseCase _viewCategoryUseCase;
+    private readonly IAddCategoryUseCase _addCategoryUseCase;
+    public NewTaskView(IAddTaskUseCase viewAddTaskUseCase, IViewTaskUseCase viewTaskUseCase, IViewCategoryUseCase viewCategoryUseCase, IAddCategoryUseCase addCategoryUseCase)
 	{
-		InitializeComponent();
+        _viewAddTaskUseCase = viewAddTaskUseCase;
+        _addCategoryUseCase = addCategoryUseCase;
+        _viewCategoryUseCase = viewCategoryUseCase;
+        _viewTaskUseCase = viewTaskUseCase;
+        InitializeComponent();
 	}
 
     private async void AddTaskClicked(object sender, EventArgs e)
@@ -19,13 +29,27 @@ public partial class NewTaskView : ContentPage
 
         if (selectedCategory != null)
         {
-            var task = new MyTask
+            if(vm.Task!=null)
             {
-                TaskName = vm.Task,
-                CategoryId = selectedCategory.Id
-            };
-            vm.Tasks.Add(task);
-            await Navigation.PopAsync();
+                var task = new MyTask
+                {
+                    TaskName = vm.Task,
+                    CategoryId = selectedCategory.Id,
+                    Completed = false
+                };
+                vm.Tasks.Add(task);
+                var tasks = await _viewTaskUseCase.GetTasksAsync();
+                var taskId = tasks.Max(x => x.Id) + 1;
+                task.Id = taskId;
+                await _viewAddTaskUseCase.ExecuteAsync(task);
+
+                await _viewCategoryUseCase.AssignTask(selectedCategory.Id, taskId);
+                await Navigation.PopAsync();
+            }
+            else
+            {
+                await DisplayAlert("Invalid Selection", "You must enter a task name", "Ok");
+            }
         }
         else
         {
@@ -47,7 +71,7 @@ public partial class NewTaskView : ContentPage
 
         if (!string.IsNullOrEmpty(category))
         {
-            vm.Categories.Add(new Category
+            var newCategory = new Category
             {
                 Id = vm.Categories.Max(x => x.Id) + 1,
                 Color = Color.FromRgb(
@@ -55,7 +79,13 @@ public partial class NewTaskView : ContentPage
                       r.Next(0, 255),
                       r.Next(0, 255)).ToHex(),
                 CategoryName = category
-            });
+            };
+            vm.Categories.Add(newCategory);
+
+            var categories = await _viewCategoryUseCase.GetCategoriesAsync();
+            var categoryId = categories.Max(x => x.Id) + 1;
+            newCategory.Id = categoryId;
+            await _addCategoryUseCase.ExecuteAsync(newCategory);
         }
     }
 }

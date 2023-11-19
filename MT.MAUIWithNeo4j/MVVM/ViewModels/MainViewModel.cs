@@ -1,99 +1,59 @@
-﻿using MT.MAUIWithNeo4j.MVVM.Models;
+﻿using MT.MAUIWithNeo4j.Core;
 using PropertyChanged;
-using System;
-using System.Collections.Generic;
+
 using System.Collections.ObjectModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using MT.MAUIWithNeo4j.UseCases.Interfaces;
 
 namespace MT.MAUIWithNeo4j.MVVM.ViewModels
 {
     [AddINotifyPropertyChangedInterface]
     public class MainViewModel
     {
+
+        private readonly IViewTaskUseCase _viewTaskUseCase;
+        private readonly IViewCategoryUseCase _viewCategoryUseCase;
         public ObservableCollection<Category> Categories { get; set; }
         public ObservableCollection<MyTask> Tasks { get; set; }
-        public MainViewModel()
+        public MainViewModel(IViewTaskUseCase viewTaskUseCase, IViewCategoryUseCase viewCategoryUseCase)
         {
+            Categories = new ObservableCollection<Category>();
+            Tasks = new ObservableCollection<MyTask>();
+            _viewTaskUseCase = viewTaskUseCase;
+            _viewCategoryUseCase = viewCategoryUseCase;
             FillData();
-            Tasks.CollectionChanged += Tasks_CollectionChanged;        }
+            Tasks.CollectionChanged += Tasks_CollectionChanged;
+            
+          
+        }
 
         private void Tasks_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
         {
             UpdateData();
         }
 
-        private void FillData()
+        private async  Task  FillData()
         {
-            Categories = new ObservableCollection<Category>
-               {
-                    new Category
-                    {
-                         Id = 1,
-                         CategoryName = ".NET MAUI Course",
-                         Color = "#CF14DF"
-                    },
-                    new Category
-                    {
-                         Id = 2,
-                         CategoryName = "Tutorials",
-                         Color = "#df6f14"
-                    },
-                    new Category
-                    {
-                         Id = 3,
-                         CategoryName = "Shopping",
-                         Color = "#14df80"
-                    }
-               };
+            this.Categories.Clear();
 
+            var categories = await _viewCategoryUseCase.GetCategoriesAsync();
+            if (categories != null && categories.Count > 0)
+            {
+                foreach (var category in categories)
+                {
+                    this.Categories.Add(category);
+                }
+            }
 
-            Tasks = new ObservableCollection<MyTask>
-               {
-                    new MyTask
-                    {
-                         TaskName = "Upload exercise files",
-                         Completed = false,
-                         CategoryId = 1
-                    },
-                    new MyTask
-                    {
-                         TaskName = "Plan next course",
-                         Completed = false,
-                         CategoryId = 1
-                    },
-                    new MyTask
-                    {
-                         TaskName = "Upload new ASP.NET video on YouTube",
-                         Completed = false,
-                         CategoryId = 2
-                    },
-                    new MyTask
-                    {
-                         TaskName = "Fix Settings.cs class of the project",
-                         Completed = false,
-                         CategoryId = 2
-                    },
-                    new MyTask
-                    {
-                         TaskName = "Update github repository",
-                         Completed = true,
-                         CategoryId = 2
-                    },
-                    new MyTask
-                    {
-                         TaskName = "Buy eggs",
-                         Completed = false,
-                         CategoryId = 3
-                    },
-                    new MyTask
-                    {
-                         TaskName = "Go for the pepperoni pizza",
-                         Completed = false,
-                         CategoryId = 3
-                    },
-               };
+            this.Tasks.Clear();
+
+            var tasks = await _viewTaskUseCase.GetTasksAsync();
+            if (tasks != null && tasks.Count > 0)
+            {
+                foreach (var task in tasks)
+                {
+                    this.Tasks.Add(task);
+                }
+            }
 
             UpdateData();
         }

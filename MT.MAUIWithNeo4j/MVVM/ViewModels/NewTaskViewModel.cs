@@ -1,4 +1,4 @@
-﻿using MT.MAUIWithNeo4j.MVVM.Models;
+﻿using MT.MAUIWithNeo4j.Core;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;

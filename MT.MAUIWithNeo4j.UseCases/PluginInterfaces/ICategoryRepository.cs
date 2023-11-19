@@ -4,9 +4,13 @@ namespace MT.MAUIWithNeo4j.UseCases.PluginInterfaces
 {
     public interface ICategoryRepository
     {
-        public interface ICategoryRepository
-        {
-            Task<List<Category>> GetContactsAsync(string filterText);
-        }
+       
+            Task<List<Category>> GetCategoriesAsync();
+            Task<Category> GetCategoryByIdAsync(int categoryId);
+            Task UpdateCategoryAsync(int categoryId, Category category);
+            Task AddCategoryAsync(Category category);
+            Task DeleteCategoryAsync(int categoryId);
+            Task AssignTask(int categoryId, int taskId);
+
     }
 }
