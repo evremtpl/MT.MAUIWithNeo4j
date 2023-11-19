@@ -3,7 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="MT.MAUIWithNeo4j.MVVM.Views.MainView"
              xmlns:converters="clr-namespace:MT.MAUIWithNeo4j.Converters"
-             Title="Neo Tasker">
+             Title="Check list">
     <ContentPage.Resources>
         <converters:ColorConverter x:Key="ColorConverter" />
     </ContentPage.Resources>

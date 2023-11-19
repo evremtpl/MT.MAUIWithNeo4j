@@ -25,6 +25,7 @@ public partial class MainView : ContentPage
 
     private void checkBox_CheckedChanged(object sender, CheckedChangedEventArgs e)
     {
+        
 	mainViewModel.UpdateData();
     }
 
