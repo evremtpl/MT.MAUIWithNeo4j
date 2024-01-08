@@ -93,8 +93,11 @@ public class TaskWebApiRedisRepository : ITaskRepository
         var response = await _client.GetAsync(uri);
         if (response.IsSuccessStatusCode)
         {
-            string content = await response.Content.ReadAsStringAsync();
-            tasks = JsonSerializer.Deserialize<List<MyTask>>(content, _serializerOptions);
+            if (response.StatusCode != System.Net.HttpStatusCode.NoContent)
+            {
+                string content = await response.Content.ReadAsStringAsync();
+                tasks = JsonSerializer.Deserialize<List<MyTask>>(content, _serializerOptions);
+            }
         }
 
         return tasks;

@@ -86,8 +86,12 @@ namespace MT.MAUIWithNeo4j.Datastore.Redis
             var response = await _client.GetAsync(uri);
             if (response.IsSuccessStatusCode)
             {
-                string content = await response.Content.ReadAsStringAsync();
-                categories = JsonSerializer.Deserialize<List<Category>>(content, _serializerOptions);
+                if (response.StatusCode!=System.Net.HttpStatusCode.NoContent)
+                {
+                    string content = await response.Content.ReadAsStringAsync();
+                    categories = JsonSerializer.Deserialize<List<Category>>(content, _serializerOptions);
+                }
+        
             }
 
             return categories;

@@ -12,14 +12,16 @@ namespace MT.MAUIWithNeo4j.MVVM.ViewModels
 
         private readonly IViewTaskUseCase _viewTaskUseCase;
         private readonly IViewCategoryUseCase _viewCategoryUseCase;
+        private readonly IAddTaskUseCase _addTaskUseCase;
         public ObservableCollection<Category> Categories { get; set; }
         public ObservableCollection<MyTask> Tasks { get; set; }
-        public MainViewModel(IViewTaskUseCase viewTaskUseCase, IViewCategoryUseCase viewCategoryUseCase)
+        public MainViewModel(IViewTaskUseCase viewTaskUseCase, IViewCategoryUseCase viewCategoryUseCase, IAddTaskUseCase addTaskUseCase)
         {
             Categories = new ObservableCollection<Category>();
             Tasks = new ObservableCollection<MyTask>();
             _viewTaskUseCase = viewTaskUseCase;
             _viewCategoryUseCase = viewCategoryUseCase;
+            _addTaskUseCase = addTaskUseCase;
             FillData();
             Tasks.CollectionChanged += Tasks_CollectionChanged;
             
@@ -86,6 +88,8 @@ namespace MT.MAUIWithNeo4j.MVVM.ViewModels
                       where c.Id == t.CategoryId
                       select c.Color).FirstOrDefault();
                 t.TaskColor = catColor;
+
+               _addTaskUseCase.UpdateAsync(t.Id,t);
             }
         }
     }

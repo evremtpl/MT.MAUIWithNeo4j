@@ -20,5 +20,10 @@ namespace MT.MAUIWithNeo4j.UseCases.Concrete
 
 
         }
+
+        public async Task UpdateAsync(int taskId,MyTask task)
+        {
+            await this._taskRepository.UpdateTaskAsync(taskId,task);
+        }
     }
 }

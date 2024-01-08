@@ -2,18 +2,21 @@
 using System.Text.Json;
 using MT.MAUIWithNeo4j.Core;
 using System.Text;
+using System.Net.Http;
 
 
-namespace MT.MAUIWithNeo4j.Datastore.Neo4j
+namespace MT.MAUIWithNeo4j.Datastore.CouchBase
 {
-    public class CategoryWebApiNeo4jRepository : ICategoryRepository
+    public class CategoryWebApiCouchbaseRepository : ICategoryRepository
     {
         private HttpClient _client;
+        private readonly IHttpClientFactory _httpClientFactory;
         private JsonSerializerOptions _serializerOptions;
 
-        public CategoryWebApiNeo4jRepository()
+        public CategoryWebApiCouchbaseRepository(IHttpClientFactory httpClientFactory)
         {
             _client = new HttpClient();
+            _httpClientFactory = httpClientFactory;
             _serializerOptions = new JsonSerializerOptions
             {
                 PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
@@ -26,7 +29,7 @@ namespace MT.MAUIWithNeo4j.Datastore.Neo4j
 
             Uri uri;
 
-            uri = new Uri($"{Constants.WebApiBaseUrl}/CategoriesNeo4j");
+            uri = new Uri($"{Constants.WebApiBaseUrl}/CategoriesCouchBase");
             var postData = JsonSerializer.Serialize(category, _serializerOptions);
             StringContent content = new StringContent(postData, Encoding.UTF8, "application/json");
 
@@ -44,7 +47,7 @@ namespace MT.MAUIWithNeo4j.Datastore.Neo4j
 
             Uri uri;
 
-            uri = new Uri($"{Constants.WebApiBaseUrl}/CategoriesNeo4j/{categoryId}/{taskId}");
+            uri = new Uri($"{Constants.WebApiBaseUrl}/CategoriesCouchBase/{categoryId}/{taskId}");
 
 
 
@@ -61,7 +64,7 @@ namespace MT.MAUIWithNeo4j.Datastore.Neo4j
         {
             Uri uri;
 
-            uri = new Uri($"{Constants.WebApiBaseUrl}/CategoriesNeo4j/{categoryId}");
+            uri = new Uri($"{Constants.WebApiBaseUrl}/CategoriesCouchBase/{categoryId}");
 
 
 
@@ -75,35 +78,26 @@ namespace MT.MAUIWithNeo4j.Datastore.Neo4j
 
         public async Task<List<Category>> GetCategoriesAsync()
         {
-            try
+            var categories = new List<Category>();
+            var httpClient = _httpClientFactory.CreateClient("NoSqlApi");
+            Uri uri;
+
+            //uri = new Uri($"{Constants.WebApiBaseUrl}/CategoriesCouchBase");
+
+            string uris= "api/CategoriesCouchBase";
+            var response = await httpClient.GetAsync(uris);
+            //var response = await _client.GetAsync(uri);
+            if (response.IsSuccessStatusCode)
             {
-                var categories = new List<Category>();
 
-                Uri uri;
-
-                uri = new Uri($"{Constants.WebApiBaseUrl}/CategoriesNeo4j");
-
-
-
-                var response = await _client.GetAsync(uri);
-                if (response.IsSuccessStatusCode)
+                if (response.StatusCode != System.Net.HttpStatusCode.NoContent)
                 {
-
-                    if (response.StatusCode != System.Net.HttpStatusCode.NoContent)
-                    {
-                        string content = await response.Content.ReadAsStringAsync();
-                        categories = JsonSerializer.Deserialize<List<Category>>(content, _serializerOptions);
-                    }
+                    string content = await response.Content.ReadAsStringAsync();
+                    categories = JsonSerializer.Deserialize<List<Category>>(content, _serializerOptions);
                 }
-
-                return categories;
             }
-            catch (Exception ex)
-            {
 
-                throw ex;
-            }
-         
+            return categories;
         }
 
         public async Task<Category> GetCategoryByIdAsync(int categoryId)
@@ -112,7 +106,7 @@ namespace MT.MAUIWithNeo4j.Datastore.Neo4j
 
             Uri uri;
 
-            uri = new Uri($"{Constants.WebApiBaseUrl}/CategoriesNeo4j/{categoryId}");
+            uri = new Uri($"{Constants.WebApiBaseUrl}/CategoriesCouchBase/{categoryId}");
 
 
 
@@ -132,7 +126,7 @@ namespace MT.MAUIWithNeo4j.Datastore.Neo4j
         {
             Uri uri;
 
-            uri = new Uri($"{Constants.WebApiBaseUrl}/CategoriesNeo4j/{categoryId}");
+            uri = new Uri($"{Constants.WebApiBaseUrl}/CategoriesCouchBase/{categoryId}");
             var putData = JsonSerializer.Serialize(category, _serializerOptions);
             StringContent content = new StringContent(putData, Encoding.UTF8, "application/json");
 

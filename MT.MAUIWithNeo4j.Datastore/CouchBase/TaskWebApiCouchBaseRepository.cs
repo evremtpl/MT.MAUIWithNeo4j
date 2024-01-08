@@ -9,12 +9,12 @@ using System.Threading.Tasks;
 
 namespace MT.MAUIWithNeo4j.Datastore.Neo4j
 {
-    public class TaskWebApiNeo4jRepository : ITaskRepository
+    public class TaskWebApiCouchBaseRepository : ITaskRepository
     {
         private HttpClient _client;
         private JsonSerializerOptions _serializerOptions;
 
-        public TaskWebApiNeo4jRepository()
+        public TaskWebApiCouchBaseRepository()
         {
             _client = new HttpClient();
             _serializerOptions = new JsonSerializerOptions
@@ -29,7 +29,7 @@ namespace MT.MAUIWithNeo4j.Datastore.Neo4j
 
             Uri uri;
 
-            uri = new Uri($"{Constants.WebApiBaseUrl}/TasksNeo4j");
+            uri = new Uri($"{Constants.WebApiBaseUrl}/TasksCouchBase");
             var postData = JsonSerializer.Serialize(task, _serializerOptions);
             StringContent content = new StringContent(postData, Encoding.UTF8, "application/json");
 
@@ -48,7 +48,7 @@ namespace MT.MAUIWithNeo4j.Datastore.Neo4j
         {
             Uri uri;
 
-            uri = new Uri($"{Constants.WebApiBaseUrl}/TasksNeo4j/{taskId}");
+            uri = new Uri($"{Constants.WebApiBaseUrl}/TasksCouchBase/{taskId}");
 
 
 
@@ -66,7 +66,7 @@ namespace MT.MAUIWithNeo4j.Datastore.Neo4j
 
             Uri uri;
 
-            uri = new Uri($"{Constants.WebApiBaseUrl}/TasksNeo4j/{id}");
+            uri = new Uri($"{Constants.WebApiBaseUrl}/TasksCouchBase/{id}");
 
 
 
@@ -86,14 +86,13 @@ namespace MT.MAUIWithNeo4j.Datastore.Neo4j
 
             Uri uri;
 
-            uri = new Uri($"{Constants.WebApiBaseUrl}/TasksNeo4j");
+            uri = new Uri($"{Constants.WebApiBaseUrl}/TasksCouchBase");
 
 
 
             var response = await _client.GetAsync(uri);
             if (response.IsSuccessStatusCode)
             {
-
                 if (response.StatusCode != System.Net.HttpStatusCode.NoContent)
                 {
                     string content = await response.Content.ReadAsStringAsync();
@@ -108,7 +107,7 @@ namespace MT.MAUIWithNeo4j.Datastore.Neo4j
         {
             Uri uri;
 
-            uri = new Uri($"{Constants.WebApiBaseUrl}/TasksNeo4j/{taskId}");
+            uri = new Uri($"{Constants.WebApiBaseUrl}/TasksCouchBase/{taskId}");
             var putData = JsonSerializer.Serialize(task, _serializerOptions);
             StringContent content = new StringContent(putData, Encoding.UTF8, "application/json");
 
