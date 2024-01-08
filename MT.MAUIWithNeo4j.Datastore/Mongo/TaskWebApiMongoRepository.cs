@@ -7,14 +7,14 @@ using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
 
-namespace MT.MAUIWithNeo4j.Datastore
+namespace MT.MAUIWithNeo4j.Datastore.Mongo
 {
-    public class TaskWebApiRepository : ITaskRepository
+    public class TaskWebApiMongoRepository : ITaskRepository
     {
         private HttpClient _client;
         private JsonSerializerOptions _serializerOptions;
 
-        public TaskWebApiRepository()
+        public TaskWebApiMongoRepository()
         {
             _client = new HttpClient();
             _serializerOptions = new JsonSerializerOptions
@@ -25,12 +25,12 @@ namespace MT.MAUIWithNeo4j.Datastore
         }
         public async Task AddTaskAsync(MyTask task)
         {
-            
+
 
             Uri uri;
 
-            uri = new Uri($"{Constants.WebApiBaseUrl}/TasksNeo4j");
-            var postData= JsonSerializer.Serialize<MyTask>(task, _serializerOptions);
+            uri = new Uri($"{Constants.WebApiBaseUrl}/TasksMongo");
+            var postData = JsonSerializer.Serialize(task, _serializerOptions);
             StringContent content = new StringContent(postData, Encoding.UTF8, "application/json");
 
 
@@ -38,25 +38,25 @@ namespace MT.MAUIWithNeo4j.Datastore
             if (response.IsSuccessStatusCode)
             {
                 string result = await response.Content.ReadAsStringAsync();
-                
+
             }
 
-           
+
         }
 
-        public  async Task DeleteTaskAsync(int taskId)
+        public async Task DeleteTaskAsync(int taskId)
         {
             Uri uri;
 
-            uri = new Uri($"{Constants.WebApiBaseUrl}/TasksNeo4j/{taskId}");
-            
+            uri = new Uri($"{Constants.WebApiBaseUrl}/TasksMongo/{taskId}");
+
 
 
             var response = await _client.DeleteAsync(uri);
             if (response.IsSuccessStatusCode)
             {
                 string result = await response.Content.ReadAsStringAsync();
-               
+
             }
         }
 
@@ -66,7 +66,7 @@ namespace MT.MAUIWithNeo4j.Datastore
 
             Uri uri;
 
-            uri = new Uri($"{Constants.WebApiBaseUrl}/TasksNeo4j/{id}");
+            uri = new Uri($"{Constants.WebApiBaseUrl}/TasksMongo/{id}");
 
 
 
@@ -80,13 +80,13 @@ namespace MT.MAUIWithNeo4j.Datastore
             return task;
         }
 
-        public async  Task<List<MyTask>> GetTasksAsync()
+        public async Task<List<MyTask>> GetTasksAsync()
         {
             var tasks = new List<MyTask>();
 
             Uri uri;
 
-            uri = new Uri($"{Constants.WebApiBaseUrl}/TasksNeo4j");
+            uri = new Uri($"{Constants.WebApiBaseUrl}/TasksMongo");
 
 
 
@@ -104,8 +104,8 @@ namespace MT.MAUIWithNeo4j.Datastore
         {
             Uri uri;
 
-            uri = new Uri($"{Constants.WebApiBaseUrl}/TasksNeo4j/{taskId}");
-            var putData = JsonSerializer.Serialize<MyTask>(task, _serializerOptions);
+            uri = new Uri($"{Constants.WebApiBaseUrl}/TasksMongo/{taskId}");
+            var putData = JsonSerializer.Serialize(task, _serializerOptions);
             StringContent content = new StringContent(putData, Encoding.UTF8, "application/json");
 
 
@@ -113,7 +113,7 @@ namespace MT.MAUIWithNeo4j.Datastore
             if (response.IsSuccessStatusCode)
             {
                 string result = await response.Content.ReadAsStringAsync();
-                
+
             }
         }
     }

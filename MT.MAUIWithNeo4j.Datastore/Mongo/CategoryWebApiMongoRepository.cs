@@ -2,16 +2,16 @@
 using System.Text.Json;
 using MT.MAUIWithNeo4j.Core;
 using System.Text;
-using System.Threading.Tasks;
 
-namespace MT.MAUIWithNeo4j.Datastore
+
+namespace MT.MAUIWithNeo4j.Datastore.Mongo
 {
-    public class CategoryWebApiRepository : ICategoryRepository
+    public class CategoryWebApiMongoRepository : ICategoryRepository
     {
         private HttpClient _client;
         private JsonSerializerOptions _serializerOptions;
 
-        public CategoryWebApiRepository()
+        public CategoryWebApiMongoRepository()
         {
             _client = new HttpClient();
             _serializerOptions = new JsonSerializerOptions
@@ -26,8 +26,8 @@ namespace MT.MAUIWithNeo4j.Datastore
 
             Uri uri;
 
-            uri = new Uri($"{Constants.WebApiBaseUrl}/CategoriesNeo4j");
-            var postData = JsonSerializer.Serialize<Category>(category, _serializerOptions);
+            uri = new Uri($"{Constants.WebApiBaseUrl}/CategoriesMongo");
+            var postData = JsonSerializer.Serialize(category, _serializerOptions);
             StringContent content = new StringContent(postData, Encoding.UTF8, "application/json");
 
 
@@ -35,33 +35,33 @@ namespace MT.MAUIWithNeo4j.Datastore
             if (response.IsSuccessStatusCode)
             {
                 string result = await response.Content.ReadAsStringAsync();
-                
+
             }
         }
 
         public async Task AssignTask(int categoryId, int taskId)
         {
-          
-                Uri uri;
 
-                uri = new Uri($"{Constants.WebApiBaseUrl}/CategoriesNeo4j/{categoryId}/{taskId}");
+            Uri uri;
+
+            uri = new Uri($"{Constants.WebApiBaseUrl}/CategoriesMongo/{categoryId}/{taskId}");
 
 
 
-                var response = await _client.GetAsync(uri);
-                if (response.IsSuccessStatusCode)
-                {
-                    string result = await response.Content.ReadAsStringAsync();
+            var response = await _client.GetAsync(uri);
+            if (response.IsSuccessStatusCode)
+            {
+                string result = await response.Content.ReadAsStringAsync();
 
-                }
-            
+            }
+
         }
 
         public async Task DeleteCategoryAsync(int categoryId)
         {
             Uri uri;
 
-            uri = new Uri($"{Constants.WebApiBaseUrl}/CategoriesNeo4j/{categoryId}");
+            uri = new Uri($"{Constants.WebApiBaseUrl}/CategoriesMongo/{categoryId}");
 
 
 
@@ -79,7 +79,7 @@ namespace MT.MAUIWithNeo4j.Datastore
 
             Uri uri;
 
-            uri = new Uri($"{Constants.WebApiBaseUrl}/CategoriesNeo4j");
+            uri = new Uri($"{Constants.WebApiBaseUrl}/CategoriesMongo");
 
 
 
@@ -99,7 +99,7 @@ namespace MT.MAUIWithNeo4j.Datastore
 
             Uri uri;
 
-            uri = new Uri($"{Constants.WebApiBaseUrl}/CategoriesNeo4j/{categoryId}");
+            uri = new Uri($"{Constants.WebApiBaseUrl}/CategoriesMongo/{categoryId}");
 
 
 
@@ -113,14 +113,14 @@ namespace MT.MAUIWithNeo4j.Datastore
             return category;
         }
 
-     
+
 
         public async Task UpdateCategoryAsync(int categoryId, Category category)
         {
             Uri uri;
 
-            uri = new Uri($"{Constants.WebApiBaseUrl}/TasksNeo4j/{categoryId}");
-            var putData = JsonSerializer.Serialize<Category>(category, _serializerOptions);
+            uri = new Uri($"{Constants.WebApiBaseUrl}/CategoriesMongo/{categoryId}");
+            var putData = JsonSerializer.Serialize(category, _serializerOptions);
             StringContent content = new StringContent(putData, Encoding.UTF8, "application/json");
 
 
@@ -128,7 +128,7 @@ namespace MT.MAUIWithNeo4j.Datastore
             if (response.IsSuccessStatusCode)
             {
                 string result = await response.Content.ReadAsStringAsync();
-              
+
             }
         }
     }

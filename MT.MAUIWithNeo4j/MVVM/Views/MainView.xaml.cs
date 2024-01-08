@@ -7,16 +7,16 @@ public partial class MainView : ContentPage
 
     private readonly IViewTaskUseCase _viewTaskUseCase;
     private readonly IViewCategoryUseCase _viewCategoryUseCase;
-    private readonly IAddTaskUseCase _viewAddTaskUseCase;
+    private readonly IAddTaskUseCase _addTaskUseCase;
     private readonly IAddCategoryUseCase _addCategoryUseCase;
     private MainViewModel mainViewModel;
 	public MainView(IViewTaskUseCase viewTaskUseCase, IViewCategoryUseCase viewCategoryUseCase, IAddTaskUseCase viewAddTaskUseCase, IAddCategoryUseCase addCategoryUseCas)
 	{
         _viewTaskUseCase= viewTaskUseCase;
         _viewCategoryUseCase= viewCategoryUseCase;
-        _viewAddTaskUseCase= viewAddTaskUseCase;
+        _addTaskUseCase = viewAddTaskUseCase;
         _addCategoryUseCase= addCategoryUseCas;
-        mainViewModel = new MainViewModel(_viewTaskUseCase, _viewCategoryUseCase);
+        mainViewModel = new MainViewModel(_viewTaskUseCase, _viewCategoryUseCase, _addTaskUseCase);
         InitializeComponent();
 
 		BindingContext = mainViewModel;
@@ -25,12 +25,17 @@ public partial class MainView : ContentPage
 
     private void checkBox_CheckedChanged(object sender, CheckedChangedEventArgs e)
     {
-	mainViewModel.UpdateData();
+        if (sender is CheckBox checkBox)
+        {
+            bool isChecked = checkBox.IsChecked;
+           
+        }
+        mainViewModel.UpdateData();
     }
 
     private void Button_Clicked(object sender, EventArgs e)
     {
-        var taskView = new NewTaskView(_viewAddTaskUseCase,_viewTaskUseCase,_viewCategoryUseCase,_addCategoryUseCase)
+        var taskView = new NewTaskView(_addTaskUseCase, _viewTaskUseCase,_viewCategoryUseCase,_addCategoryUseCase)
         {
             BindingContext = new NewTaskViewModel
             {
@@ -40,6 +45,6 @@ public partial class MainView : ContentPage
         };
 
         Navigation.PushAsync(taskView);
-        //Shell.Current.GoToAsync(nameof(taskView));
+        
     }
 }

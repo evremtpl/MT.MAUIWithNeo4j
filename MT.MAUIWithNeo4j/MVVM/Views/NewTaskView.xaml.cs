@@ -39,7 +39,8 @@ public partial class NewTaskView : ContentPage
                 };
                 vm.Tasks.Add(task);
                 var tasks = await _viewTaskUseCase.GetTasksAsync();
-                var taskId = tasks.Max(x => x.Id) + 1;
+
+                var taskId = tasks.Count()==0? 1: tasks.Max(x => x.Id) + 1;
                 task.Id = taskId;
                 await _viewAddTaskUseCase.ExecuteAsync(task);
 
@@ -50,6 +51,10 @@ public partial class NewTaskView : ContentPage
             {
                 await DisplayAlert("Invalid Selection", "You must enter a task name", "Ok");
             }
+        }
+        else if(!vm.Categories.Any())
+        {
+            await DisplayAlert("Invalid Selection", "There is no category, please firstly add category", "Ok");
         }
         else
         {
@@ -73,7 +78,7 @@ public partial class NewTaskView : ContentPage
         {
             var newCategory = new Category
             {
-                Id = vm.Categories.Max(x => x.Id) + 1,
+                Id = vm.Categories.Count() == 0 ? 1 : vm.Categories.Max(x => x.Id) + 1,
                 Color = Color.FromRgb(
                       r.Next(0, 255),
                       r.Next(0, 255),
@@ -83,7 +88,7 @@ public partial class NewTaskView : ContentPage
             vm.Categories.Add(newCategory);
 
             var categories = await _viewCategoryUseCase.GetCategoriesAsync();
-            var categoryId = categories.Max(x => x.Id) + 1;
+            var categoryId = categories.Count()==0? 1 :categories.Max(x => x.Id) + 1;
             newCategory.Id = categoryId;
             await _addCategoryUseCase.ExecuteAsync(newCategory);
         }

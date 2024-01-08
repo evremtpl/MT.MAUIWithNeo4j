@@ -3,6 +3,12 @@ using MT.MAUIWithNeo4j.UseCases.Interfaces;
 using MT.MAUIWithNeo4j.UseCases.Concrete;
 using MT.MAUIWithNeo4j.UseCases.PluginInterfaces;
 using MT.MAUIWithNeo4j.Datastore;
+
+using MT.MAUIWithNeo4j.Datastore.Redis;
+using MT.MAUIWithNeo4j.Datastore.Mongo;
+using MT.MAUIWithNeo4j.Datastore.Neo4j;
+using MT.MAUIWithNeo4j.Datastore.CouchBase;
+
 namespace MT.MAUIWithNeo4j
 {
     public static class MauiProgram
@@ -18,18 +24,31 @@ namespace MT.MAUIWithNeo4j
                     fonts.AddFont("OpenSans-Semibold.ttf", "OpenSansSemibold");
                     fonts.AddFont("Roboto-Regular.ttf", "Roboto");
                 });
+            builder.Services.AddHttpClient("NoSqlApi", httpClient =>
+            {
+                httpClient.BaseAddress = new Uri(DeviceInfo.Platform == DevicePlatform.Android
+                    ? "http://10.0.2.2:5086"
+                    : "http://localhost:5086");
+            });
 
 #if DEBUG
-    		builder.Logging.AddDebug();
+            builder.Logging.AddDebug();
 #endif
             builder.Services.AddSingleton<IViewTaskUseCase, ViewTaskUseCase>();
             builder.Services.AddSingleton<IViewCategoryUseCase, ViewCategoryUseCase>();
-            builder.Services.AddSingleton<ITaskRepository, TaskWebApiRepository>(); 
-            builder.Services.AddSingleton<ICategoryRepository, CategoryWebApiRepository>();
-
             builder.Services.AddScoped<IAddTaskUseCase, AddTaskUseCase>();
             builder.Services.AddScoped<IAddCategoryUseCase, AddCategoryUseCase>();
-            
+
+            builder.Services.AddSingleton<ITaskRepository, TaskWebApiCouchBaseRepository>();
+            builder.Services.AddSingleton<ICategoryRepository, CategoryWebApiCouchbaseRepository>();
+            //builder.Services.AddSingleton<ITaskRepository, TaskWebApiMongoRepository>();
+            //builder.Services.AddSingleton<ICategoryRepository, CategoryWebApiMongoRepository>();
+            //builder.Services.AddSingleton<ITaskRepository, TaskWebApiRedisRepository>();
+            //builder.Services.AddSingleton<ICategoryRepository, CategoryWebApiRedisRepository>();
+            //builder.Services.AddSingleton<ITaskRepository, TaskWebApiNeo4jRepository>();
+            //builder.Services.AddSingleton<ICategoryRepository, CategoryWebApiNeo4jRepository>();
+
+
             return builder.Build();
         }
     }
